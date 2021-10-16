@@ -21,12 +21,13 @@ io.on('connect', (socket) => {
     const { error, user } = addUser({ id: socket.id, name, room });
 
     if(error) return callback(error);
-
+    // Join to a room
     socket.join(user.room);
-
+    // emit message to all users in the room
     socket.emit('message', { user: 'admin', text: `${user.name}, welcome to room ${user.room}.`});
+    // emit message to all users except this user in the room 
     socket.broadcast.to(user.room).emit('message', { user: 'admin', text: `${user.name} has joined!` });
-
+    // send message all users in the room
     io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
 
     callback();
